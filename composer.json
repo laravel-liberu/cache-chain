@@ -1,0 +1,41 @@
+{
+    "name": "laravel-enso/cache-chain",
+    "description": "Cache chain for Laravel Enso",
+    "keywords": [
+        "laravel-enso",
+        "cache-chain",
+        "laravel-cache",
+        "cache"
+    ],
+    "homepage": "https://github.com/laravel-enso/cache-chain",
+    "type": "library",
+    "license": "MIT",
+    "authors": [{
+        "name": "Adrian Ocneanu",
+        "email": "aocneanu@gmail.com",
+        "homepage": "https://laravel-enso.com",
+        "role": "Developer"
+    }, {
+        "name": "Reza Fouladi",
+        "email": "raftx24@gmail.com",
+        "homepage": "https://laravel-enso.com",
+        "role": "Developer"
+    }],
+    "require": {
+        "php": ">=7.4.0",
+        "laravel/framework": "^7.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "LaravelEnso\\CacheChain\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "LaravelEnso\\CacheChain\\AppServiceProvider"
+            ],
+            "aliases": {}
+        }
+    }
+}
