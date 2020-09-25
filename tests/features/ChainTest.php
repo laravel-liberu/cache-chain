@@ -30,6 +30,19 @@ class ChainTest extends TestCase
     }
 
     /** @test */
+    public function when_cache_exists_one_second_level_should_put_one_first_level()
+    {
+        $adapters = $this->setAdapters('array', 'file');
+
+        Cache::store('file')->put('foo', 'bar');
+
+        $this->assertNull(Cache::store('array')->get('foo'));
+
+        $this->assertEquals('bar', Cache::store('chain')->get('foo'));
+        $this->assertEquals('bar', Cache::store('array')->get('foo'));
+    }
+
+    /** @test */
     public function can_get_on_second()
     {
         $adapters = $this->setAdapters(Mockery::spy(Store::class), 'array');
@@ -93,6 +106,13 @@ class ChainTest extends TestCase
 
         (new Collection(['file', 'array', 'chain']))->each(fn ($provider) => $this
             ->assertEquals(-1, Cache::store($provider)->get('number')));
+    }
+
+    protected function tearDown(): void
+    {
+        Cache::store('file')->flush();
+
+        parent::tearDown();
     }
 
     private function setAdapters(...$adapters): array

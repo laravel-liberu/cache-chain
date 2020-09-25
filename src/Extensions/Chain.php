@@ -23,13 +23,7 @@ class Chain extends TaggableStore
 
     public function get($key)
     {
-        foreach ($this->chains as $provider) {
-            if ($result = $provider->get($key)) {
-                return $result;
-            }
-        }
-
-        return null;
+        return $this->getAndPut($key);
     }
 
     public function put($key, $value, $seconds)
@@ -70,5 +64,24 @@ class Chain extends TaggableStore
     private function each($method, ...$args)
     {
         return $this->chains->each->$method(...$args);
+    }
+
+    private function getAndPut($key, $index = 0)
+    {
+        if ($index >= $this->chains->count()) {
+            return null;
+        }
+
+        if ($result = $this->chains->get($index)->get($key)) {
+            return $result;
+        }
+
+        if ($result = $this->getAndPut($key, $index + 1)) {
+            config('cache.stores.chain.defaultTTL') !== null
+                ? $this->chains->get($index)->put($key, $result, config('cache.stores.chain.defaultTTL'))
+                : $this->chains->get($index)->forever($key, $result);
+        }
+
+        return $result;
     }
 }
