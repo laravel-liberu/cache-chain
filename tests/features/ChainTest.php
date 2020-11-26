@@ -5,6 +5,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Config;
 use Tests\TestCase;
+use LaravelEnso\CacheChain\Exceptions\Chain as Exception;
 
 class ChainTest extends TestCase
 {
@@ -106,6 +107,18 @@ class ChainTest extends TestCase
 
         Collection::wrap($adapters)->each(fn ($adapter) => $this
             ->assertEquals(1, Cache::store($adapter)->get('number')));
+    }
+
+    /** @test */
+    public function should_throw_exception_with_empty_adapters()
+    {
+        try {
+            Cache::store('chain')->adapters([]);
+
+            $this->fail('should throw exception');
+        } catch (Exception $e) {
+            $this->assertTrue(true);
+        }
     }
 
     protected function tearDown(): void

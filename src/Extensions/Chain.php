@@ -9,6 +9,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\InteractsWithTime;
+use LaravelEnso\CacheChain\Exceptions\Chain as Exception;
 
 class Chain extends TaggableStore
 {
@@ -31,32 +32,32 @@ class Chain extends TaggableStore
 
     public function put($key, $value, $seconds)
     {
-        return $this->and('put', ...func_get_args());
+        return $this->every('put', ...func_get_args());
     }
 
     public function increment($key, $value = 1)
     {
-        return $this->last('increment', ...func_get_args());
+        return $this->every('increment', ...func_get_args());
     }
 
     public function decrement($key, $value = 1)
     {
-        return $this->last('decrement', ...func_get_args());
+        return $this->every('decrement', ...func_get_args());
     }
 
     public function forever($key, $value)
     {
-        return $this->and('forever', ...func_get_args());
+        return $this->every('forever', ...func_get_args());
     }
 
     public function forget($key)
     {
-        return $this->and('forget', ...func_get_args());
+        return $this->every('forget', ...func_get_args());
     }
 
     public function flush()
     {
-        return $this->and('flush', ...func_get_args());
+        return $this->every('flush', ...func_get_args());
     }
 
     public function getPrefix()
@@ -66,23 +67,17 @@ class Chain extends TaggableStore
 
     public function adapters(array $adapters)
     {
+        throw_if(empty($adapters), Exception::emptryAdapaters());
+
         $this->adapters = Collection::wrap($adapters)
             ->map(fn ($provider) => $this->store($provider));
     }
 
-    private function last($method, ...$args)
+    private function every($method, ...$args)
     {
-        return $this->adapters->reduce(fn($tmp, $adapter) => $adapter->{$method}(...$args));
-    }
-
-    private function or($method, ...$args)
-    {
-        return $this->adapters->reduce(fn($result, $adapter) => $adapter->{$method}(...$args) || $result, false);
-    }
-
-    private function and($method, ...$args)
-    {
-        return $this->adapters->reduce(fn($result, $adapter) => $adapter->{$method}(...$args) && $result, true);
+        return $this->adapters
+            ->map(fn ($adapter) => $adapter->{$method}(...$args))
+            ->last();
     }
 
     private function cacheGet($key, int $layer = 0)
