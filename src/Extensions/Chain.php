@@ -67,7 +67,7 @@ class Chain extends TaggableStore
 
     public function adapters(array $adapters)
     {
-        throw_if(empty($adapters), Exception::emptyAdapaters());
+        throw_if(empty($adapters), Exception::adapters());
 
         $this->adapters = Collection::wrap($adapters)
             ->map(fn ($provider) => $this->store($provider));

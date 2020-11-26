@@ -113,7 +113,7 @@ class ChainTest extends TestCase
     public function should_throw_exception_with_empty_adapters()
     {
         $this->expectException(Exception::class);
-        $this->expectExceptionMessage(Exception::emptyAdapaters()->getMessage());
+        $this->expectExceptionMessage(Exception::adapters()->getMessage());
         Cache::store('chain')->adapters([]);
     }
 

@@ -6,7 +6,7 @@ use Exception;
 
 class Chain extends Exception
 {
-    public static function emptyAdapaters(): self
+    public static function adapters(): self
     {
         return new static(__('No cache adapters provided'));
     }
