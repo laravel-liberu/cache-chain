@@ -112,13 +112,9 @@ class ChainTest extends TestCase
     /** @test */
     public function should_throw_exception_with_empty_adapters()
     {
-        try {
-            Cache::store('chain')->adapters([]);
-
-            $this->fail('should throw exception');
-        } catch (Exception $e) {
-            $this->assertTrue(true);
-        }
+        $this->expectException(Exception::class);
+        $this->expectExceptionMessage(Exception::emptyAdapaters()->getMessage());
+        Cache::store('chain')->adapters([]);
     }
 
     protected function tearDown(): void
