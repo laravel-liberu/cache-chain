@@ -70,11 +70,6 @@ class Chain extends TaggableStore
             ->map(fn ($provider) => $this->store($provider));
     }
 
-    private function some($method, ...$args)
-    {
-        return $this->adapters->some->{$method}(...$args);
-    }
-
     private function last($method, ...$args)
     {
         return $this->adapters->reduce(fn($tmp, $adapter) => $adapter->{$method}(...$args));
