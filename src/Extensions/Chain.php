@@ -19,7 +19,7 @@ class Chain extends TaggableStore
 
     public function __construct()
     {
-        $this->adapters = $this->adapters();
+        $this->adapters(Config::get('cache.stores.chain.adapters'));
 
         $this->ttl = Config::get('cache.stores.chain.defaultTTL');
     }
@@ -31,32 +31,32 @@ class Chain extends TaggableStore
 
     public function put($key, $value, $seconds)
     {
-        return $this->each('put', ...func_get_args());
+        return $this->and('put', ...func_get_args());
     }
 
     public function increment($key, $value = 1)
     {
-        return $this->each('increment', ...func_get_args());
+        return $this->last('increment', ...func_get_args());
     }
 
     public function decrement($key, $value = 1)
     {
-        return $this->each('decrement', ...func_get_args());
+        return $this->last('decrement', ...func_get_args());
     }
 
     public function forever($key, $value)
     {
-        return $this->each('forever', ...func_get_args());
+        return $this->and('forever', ...func_get_args());
     }
 
     public function forget($key)
     {
-        return $this->each('forget', ...func_get_args());
+        return $this->and('forget', ...func_get_args());
     }
 
     public function flush()
     {
-        return $this->each('flush', ...func_get_args());
+        return $this->and('flush', ...func_get_args());
     }
 
     public function getPrefix()
@@ -64,9 +64,30 @@ class Chain extends TaggableStore
         return '';
     }
 
-    private function each($method, ...$args)
+    public function adapters(array $adapters)
     {
-        return $this->adapters->each->{$method}(...$args);
+        $this->adapters = Collection::wrap($adapters)
+            ->map(fn ($provider) => $this->store($provider));
+    }
+
+    private function some($method, ...$args)
+    {
+        return $this->adapters->some->{$method}(...$args);
+    }
+
+    private function last($method, ...$args)
+    {
+        return $this->adapters->reduce(fn($tmp, $adapter) => $adapter->{$method}(...$args));
+    }
+
+    private function or($method, ...$args)
+    {
+        return $this->adapters->reduce(fn($result, $adapter) => $adapter->{$method}(...$args) || $result, false);
+    }
+
+    private function and($method, ...$args)
+    {
+        return $this->adapters->reduce(fn($result, $adapter) => $adapter->{$method}(...$args) && $result, true);
     }
 
     private function cacheGet($key, int $layer = 0)
@@ -88,14 +109,6 @@ class Chain extends TaggableStore
         }
 
         return $cachedValue;
-    }
-
-    private function adapters(): COllection
-    {
-        $adapters = Config::get('cache.stores.chain.adapters');
-
-        return Collection::wrap($adapters)
-            ->map(fn ($provider) => $this->store($provider));
     }
 
     private function store($provider)
