@@ -8,6 +8,6 @@ class Chain extends Exception
 {
     public static function emptyAdapaters(): self
     {
-        return new static(__('You should at least provide one adapter'));
+        return new static(__('No cache adapters provided'));
     }
 }
