@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Cache\Repository;
 use Illuminate\Contracts\Cache\Store;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
@@ -127,10 +128,62 @@ class ChainTest extends TestCase
         Cache::store('chain')->adapters([]);
     }
 
+    /** @test */
+    public function should_throw_exception_with_empty_lock_adapters()
+    {
+        $this->expectException(Exception::class);
+        $this->expectExceptionMessage(Exception::lockAdapter()->getMessage());
+        Cache::store('chain')->adapters([new Repository(new DummyCache())]);
+        Cache::store('chain')->lock('test');
+    }
+
     protected function tearDown(): void
     {
         Cache::store('file')->flush();
 
         parent::tearDown();
+    }
+}
+
+class DummyCache implements Store {
+
+    public function get($key)
+    {
+    }
+
+    public function many(array $keys)
+    {
+    }
+
+    public function put($key, $value, $seconds)
+    {
+    }
+
+    public function putMany(array $values, $seconds)
+    {
+    }
+
+    public function increment($key, $value = 1)
+    {
+    }
+
+    public function decrement($key, $value = 1)
+    {
+    }
+
+    public function forever($key, $value)
+    {
+    }
+
+    public function forget($key)
+    {
+    }
+
+    public function flush()
+    {
+    }
+
+    public function getPrefix()
+    {
     }
 }

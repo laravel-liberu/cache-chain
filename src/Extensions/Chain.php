@@ -4,14 +4,15 @@ namespace LaravelEnso\CacheChain\Extensions;
 
 use Illuminate\Cache\RetrievesMultipleKeys;
 use Illuminate\Cache\TaggableStore;
-use Illuminate\Contracts\Cache\Store;
+use Illuminate\Contracts\Cache\LockProvider;
+use Illuminate\Contracts\Cache\Repository;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\InteractsWithTime;
 use LaravelEnso\CacheChain\Exceptions\Chain as Exception;
 
-class Chain extends TaggableStore
+class Chain extends TaggableStore implements LockProvider
 {
     use InteractsWithTime, RetrievesMultipleKeys;
 
@@ -79,6 +80,16 @@ class Chain extends TaggableStore
             ->map(fn ($provider) => $this->store($provider));
     }
 
+    public function restoreLock($name, $owner)
+    {
+        return $this->lockAdapter()->restoreLock($name, $owner);
+    }
+
+    public function lock($name, $seconds = 0, $owner = null)
+    {
+        return $this->lockAdapter()->lock($name, $seconds, $owner);
+    }
+
     private function handleWithSync($method, $key, $value, $new)
     {
         return $this->adapters
@@ -98,10 +109,12 @@ class Chain extends TaggableStore
     private function cacheGet($key, int $layer = 0)
     {
         if ($layer >= $this->adapters->count()) {
-            return;
+            return null;
         }
 
-        if ($cachedValue = $this->adapters->get($layer)->get($key)) {
+        $cachedValue = $this->adapters->get($layer)->get($key);
+
+        if ($cachedValue !== null) {
             return $cachedValue;
         }
 
@@ -118,8 +131,18 @@ class Chain extends TaggableStore
 
     private function store($provider)
     {
-        return $provider instanceof Store
+        return $provider instanceof Repository
             ? $provider
             : Cache::store($provider);
+    }
+
+    private function lockAdapter(): Repository
+    {
+        return $this->adapters
+            ->reverse()
+            ->filter(fn ($adapter) => $adapter->getStore() instanceof LockProvider)
+            ->whenEmpty(function () {
+                throw Exception::lockAdapter();
+            })->first();
     }
 }

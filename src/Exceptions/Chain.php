@@ -10,4 +10,9 @@ class Chain extends Exception
     {
         return new static(__('No cache adapters provided'));
     }
+
+    public static function lockAdapter(): self
+    {
+        return new static(__('No lock cache adapters provided'));
+    }
 }
