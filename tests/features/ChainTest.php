@@ -13,7 +13,7 @@ class ChainTest extends TestCase
     public function should_cache_on_all_configured_adapters()
     {
         $adapters = ['array', 'file'];
-        Cache::store('chain')->adapters($adapters);
+        Cache::store('chain')->providers($adapters);
 
         $this->assertTrue(Cache::store('chain')->put('foo', 'bar'));
 
@@ -24,7 +24,7 @@ class ChainTest extends TestCase
     /** @test */
     public function should_get_from_first_layer_when_available()
     {
-        Cache::store('chain')->adapters(['array', Mockery::mock(Store::class)]);
+        Cache::store('chain')->providers(['array', new Repository(Mockery::mock(Store::class))]);
 
         $this->assertTrue(Cache::store('array')->put('foo', 'bar'));
 
@@ -34,7 +34,7 @@ class ChainTest extends TestCase
     /** @test */
     public function should_get_from_superior_layer_when_first_not_available()
     {
-        Cache::store('chain')->adapters([Mockery::spy(Store::class), 'array']);
+        Cache::store('chain')->providers([new Repository(Mockery::spy(Store::class)), 'array']);
 
         $this->assertTrue(Cache::store('array')->put('foo', 'bar'));
 
@@ -44,7 +44,7 @@ class ChainTest extends TestCase
     /** @test */
     public function should_cache_inferior_layers_on_get_when_superior_exists()
     {
-        Cache::store('chain')->adapters(['array', 'file']);
+        Cache::store('chain')->providers(['array', 'file']);
 
         Cache::store('file')->put('foo', 'bar');
 
@@ -56,7 +56,7 @@ class ChainTest extends TestCase
     /** @test */
     public function should_sync_inferior_layers_when_superior_exists()
     {
-        Cache::store('chain')->adapters(['array', 'file']);
+        Cache::store('chain')->providers(['array', 'file']);
 
         Cache::store('file')->put('foo', 5);
 
@@ -68,7 +68,7 @@ class ChainTest extends TestCase
     public function can_flush()
     {
         $adapters = ['file', 'array'];
-        Cache::store('chain')->adapters($adapters);
+        Cache::store('chain')->providers($adapters);
 
         Cache::store('chain')->put('foo', 'bar');
         Cache::store('chain')->put('bar', 'foo');
@@ -83,7 +83,7 @@ class ChainTest extends TestCase
     public function can_forget()
     {
         $adapters = ['file', 'array'];
-        Cache::store('chain')->adapters($adapters);
+        Cache::store('chain')->providers($adapters);
 
         Cache::store('chain')->put('foo', 'bar');
         Cache::store('chain')->put('bar', 'foo');
@@ -98,7 +98,7 @@ class ChainTest extends TestCase
     public function can_increment()
     {
         $adapters = ['file', 'array'];
-        Cache::store('chain')->adapters($adapters);
+        Cache::store('chain')->providers($adapters);
 
         Cache::store('chain')->put('number', 1);
         $this->assertEquals(3, Cache::store('chain')->increment('number', 2));
@@ -111,7 +111,7 @@ class ChainTest extends TestCase
     public function can_decrement()
     {
         $adapters = ['file', 'array'];
-        Cache::store('chain')->adapters($adapters);
+        Cache::store('chain')->providers($adapters);
 
         Cache::store('chain')->put('number', 3);
         $this->assertEquals(1, Cache::store('chain')->decrement('number', 2));
@@ -124,16 +124,16 @@ class ChainTest extends TestCase
     public function should_throw_exception_with_empty_adapters()
     {
         $this->expectException(Exception::class);
-        $this->expectExceptionMessage(Exception::adapters()->getMessage());
-        Cache::store('chain')->adapters([]);
+        $this->expectExceptionMessage(Exception::providers()->getMessage());
+        Cache::store('chain')->providers([]);
     }
 
     /** @test */
     public function should_throw_exception_with_empty_lock_adapters()
     {
         $this->expectException(Exception::class);
-        $this->expectExceptionMessage(Exception::lockAdapter()->getMessage());
-        Cache::store('chain')->adapters([new Repository(new DummyCache())]);
+        $this->expectExceptionMessage(Exception::lockProvider()->getMessage());
+        Cache::store('chain')->providers([new Repository(Mockery::mock(Store::class))]);
         Cache::store('chain')->lock('test');
     }
 
@@ -142,48 +142,5 @@ class ChainTest extends TestCase
         Cache::store('file')->flush();
 
         parent::tearDown();
-    }
-}
-
-class DummyCache implements Store {
-
-    public function get($key)
-    {
-    }
-
-    public function many(array $keys)
-    {
-    }
-
-    public function put($key, $value, $seconds)
-    {
-    }
-
-    public function putMany(array $values, $seconds)
-    {
-    }
-
-    public function increment($key, $value = 1)
-    {
-    }
-
-    public function decrement($key, $value = 1)
-    {
-    }
-
-    public function forever($key, $value)
-    {
-    }
-
-    public function forget($key)
-    {
-    }
-
-    public function flush()
-    {
-    }
-
-    public function getPrefix()
-    {
     }
 }
