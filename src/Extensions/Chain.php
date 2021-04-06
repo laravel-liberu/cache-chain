@@ -109,7 +109,7 @@ class Chain extends TaggableStore implements LockProvider
     private function cacheGet($key, int $layer = 0)
     {
         if ($layer >= $this->providers->count()) {
-            return null;
+            return;
         }
 
         $cachedValue = $this->providers->get($layer)->get($key);
