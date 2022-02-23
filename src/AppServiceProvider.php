@@ -12,7 +12,7 @@ class AppServiceProvider extends ServiceProvider
     {
         $this->app->booting(fn () => Cache::extend(
             'chain',
-            fn () => Cache::repository(new Chain())
+            fn ($app, $config) => Cache::repository(new Chain($config['providers'], $config['defaultTTL'] ?? 0))
         ));
     }
 }

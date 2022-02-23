@@ -19,11 +19,11 @@ class Chain extends TaggableStore implements LockProvider
     private Collection $providers;
     private ?int $ttl;
 
-    public function __construct()
+    public function __construct(array $providers, ?int $ttl)
     {
-        $this->providers(Config::get('cache.stores.chain.providers'));
+        $this->providers($providers);
 
-        $this->ttl = Config::get('cache.stores.chain.defaultTTL');
+        $this->ttl = $ttl;
     }
 
     public function get($key)
