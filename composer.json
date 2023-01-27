@@ -1,24 +1,24 @@
 {
-    "name": "laravel-enso/cache-chain",
+    "name": "cgdsoftware/cache-chain",
     "description": "Cache chain for Laravel Enso",
     "keywords": [
-        "laravel-enso",
+        "cgdsoftware",
         "cache-chain",
         "laravel-cache",
         "cache"
     ],
-    "homepage": "https://github.com/laravel-enso/cache-chain",
+    "homepage": "https://github.com/cgdsoftware/cache-chain",
     "type": "library",
     "license": "MIT",
     "authors": [{
         "name": "Reza Fouladi",
         "email": "raftx24@gmail.com",
-        "homepage": "https://laravel-enso.com",
+        "homepage": "https://cgdsoftware.com",
         "role": "Developer"
     }, {
         "name": "Adrian Ocneanu",
         "email": "aocneanu@gmail.com",
-        "homepage": "https://laravel-enso.com",
+        "homepage": "https://cgdsoftware.com",
         "role": "Developer"
     }],
     "require": {
