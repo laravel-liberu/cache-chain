@@ -17,9 +17,9 @@ class Chain extends TaggableStore implements LockProvider
     use InteractsWithTime, RetrievesMultipleKeys;
 
     private Collection $providers;
-    private ?int $ttl;
+    private int $ttl;
 
-    public function __construct(array $providers, ?int $ttl)
+    public function __construct(array $providers, int $ttl)
     {
         $this->providers($providers);
 
@@ -119,7 +119,7 @@ class Chain extends TaggableStore implements LockProvider
         }
 
         $cachedValue = $this->cacheGet($key, $layer + 1);
-        
+
         if ($cachedValue !== null) {
             if ($this->ttl > 0) {
                 $this->providers->get($layer)->put($key, $cachedValue, $this->ttl);
@@ -143,8 +143,7 @@ class Chain extends TaggableStore implements LockProvider
         return $this->providers
             ->reverse()
             ->filter(fn ($provider) => $provider->getStore() instanceof LockProvider)
-            ->whenEmpty(function () {
-                throw Exception::lockProvider();
-            })->first();
+            ->whenEmpty(fn () => throw Exception::lockProvider())
+            ->first();
     }
 }

@@ -13,6 +13,7 @@ class ChainTest extends TestCase
     public function should_cache_on_all_configured_providers()
     {
         $providers = ['array', 'file'];
+
         Cache::store('chain')->providers($providers);
 
         $this->assertTrue(Cache::store('chain')->put('foo', 'bar'));

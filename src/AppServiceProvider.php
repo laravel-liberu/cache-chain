@@ -10,9 +10,11 @@ class AppServiceProvider extends ServiceProvider
 {
     public function register()
     {
-        $this->app->booting(fn () => Cache::extend(
-            'chain',
-            fn ($app, $config) => Cache::repository(new Chain($config['providers'], $config['defaultTTL'] ?? 0))
+        $chain = fn ($app, $config) => Cache::repository(new Chain(
+            $config['providers'],
+            $config['defaultTTL'] ?? 0
         ));
+
+        $this->app->booting(fn () => Cache::extend('chain', $chain));
     }
 }
