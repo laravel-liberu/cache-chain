@@ -17,7 +17,7 @@ class Chain extends TaggableStore implements LockProvider
     use InteractsWithTime, RetrievesMultipleKeys;
 
     private Collection $providers;
-    private ?int $ttl;
+    private readonly ?int $ttl;
 
     public function __construct()
     {
@@ -141,7 +141,7 @@ class Chain extends TaggableStore implements LockProvider
         return $this->providers
             ->reverse()
             ->filter(fn ($provider) => $provider->getStore() instanceof LockProvider)
-            ->whenEmpty(function () {
+            ->whenEmpty(function (): never {
                 throw Exception::lockProvider();
             })->first();
     }
