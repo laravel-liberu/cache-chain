@@ -4,7 +4,7 @@ use Illuminate\Cache\Repository;
 use Illuminate\Contracts\Cache\Store;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
-use LaravelEnso\CacheChain\Exceptions\Chain as Exception;
+use LaravelLiberu\CacheChain\Exceptions\Chain as Exception;
 use Tests\TestCase;
 
 class ChainTest extends TestCase

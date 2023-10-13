@@ -1,6 +1,6 @@
 <?php
 
-namespace LaravelEnso\CacheChain\Extensions;
+namespace LaravelLiberu\CacheChain\Extensions;
 
 use Illuminate\Cache\RetrievesMultipleKeys;
 use Illuminate\Cache\TaggableStore;
@@ -10,7 +10,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\InteractsWithTime;
-use LaravelEnso\CacheChain\Exceptions\Chain as Exception;
+use LaravelLiberu\CacheChain\Exceptions\Chain as Exception;
 
 class Chain extends TaggableStore implements LockProvider
 {

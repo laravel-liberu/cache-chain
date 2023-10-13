@@ -1,10 +1,10 @@
 <?php
 
-namespace LaravelEnso\CacheChain;
+namespace LaravelLiberu\CacheChain;
 
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\ServiceProvider;
-use LaravelEnso\CacheChain\Extensions\Chain;
+use LaravelLiberu\CacheChain\Extensions\Chain;
 
 class AppServiceProvider extends ServiceProvider
 {

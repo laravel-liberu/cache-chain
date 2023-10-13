@@ -27,13 +27,13 @@
     },
     "autoload": {
         "psr-4": {
-            "LaravelEnso\\CacheChain\\": "src/"
+            "LaravelLiberu\\CacheChain\\": "src/"
         }
     },
     "extra": {
         "laravel": {
             "providers": [
-                "LaravelEnso\\CacheChain\\AppServiceProvider"
+                "LaravelLiberu\\CacheChain\\AppServiceProvider"
             ],
             "aliases": {}
         }

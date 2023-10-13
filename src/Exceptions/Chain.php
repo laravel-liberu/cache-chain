@@ -1,6 +1,6 @@
 <?php
 
-namespace LaravelEnso\CacheChain\Exceptions;
+namespace LaravelLiberu\CacheChain\Exceptions;
 
 use Exception;
 
